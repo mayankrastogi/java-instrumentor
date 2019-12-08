@@ -1,4 +1,4 @@
-package com.javainstrumentor.tool
+package com.javainstrumentor.tool.utils
 
 import java.net.URI
 import java.nio.file.{Files, Path, Paths}
@@ -13,23 +13,24 @@ object IOUtils {
     getJavaFilePaths(path)
   }
 
-  def getJavaFilePathsFromResource(name: String): List[String] = {
-    val path = Paths.get(resolveUriToResource(name))
-    getJavaFilePaths(path)
-  }
-
   def getJavaFilePaths(root: Path): List[String] = {
     Files
       .walk(root)
-      .toScala(Iterator)
+      .toScala(List)
       .map(_.normalize.toString)
       .filter(_.endsWith(".java"))
-      .toList
   }
 
-  def resolveUriToResource(name: String): URI = {
-    getClass.getClassLoader.getResource(name).toURI
+  def getJavaFilePathsFromResource(name: String): List[String] = {
+    val path = resolvePathToResource(name)
+    getJavaFilePaths(path)
   }
+
+  def resolvePathToResource(name: String): Path = Paths.get(resolveUriToResource(name))
+
+  def resolveUriToResource(name: String): URI = getClass.getClassLoader.getResource(name).toURI
+
+  def resolvePathStringToResource(name: String): String = resolvePathToResource(name).toString
 
   /**
    * Extracts the file name from a file path.
@@ -37,9 +38,7 @@ object IOUtils {
    * @param filePath The file path.
    * @return The file name.
    */
-  def getFileName(filePath: String): String = {
-    filePath.stripPrefix("'").stripSuffix("/").split("/").last
-  }
+  def getFileName(filePath: String): String = filePath.stripPrefix("'").stripSuffix("/").split("/").last
 
   def readFile(path: String): Array[Char] = {
     val file = Source.fromFile(path)
