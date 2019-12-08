@@ -3,13 +3,13 @@ package com.javainstrumentor.clientlib
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
 import java.net.{ServerSocket, Socket}
 
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 /**
   * Sample server to test IPC
   */
 object SocketServer {
-  val logger = LoggerFactory.getLogger(this.getClass)
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 
   def start(): Unit = {
