@@ -9,13 +9,20 @@ public class Project1Class1 {
     String name;
     int age;
 
+//    float testFloat;
+
     public String doSomething() {
+
+//        testFloat = 23f;
         if(age < 10) {
+            float testFloat = 2f;
             age += 10;
+            testFloat = 35f;
             return name + age;
         }
         else {
             age++;
+//            testFloat = 1f;
             return "" + age + name;
         }
     }

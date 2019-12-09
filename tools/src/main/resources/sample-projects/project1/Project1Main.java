@@ -1,6 +1,6 @@
 //package sampleprojects.project1;
 
-import com.javainstrumentor.tool.IPC.MessageClient;
+//import com.javainstrumentor.clientlib.MessageClient;
 
 public class Project1Main {
 
@@ -19,11 +19,11 @@ public class Project1Main {
         inferredTypeVariable.stringMethod(Integer.toString(obj.age));
         inferredTypeVariable.voidMethod(obj);
 
-        MessageClient messageClient = new MessageClient("127.0.0.1", 30);
-        messageClient.sendMessage("key1-10");
-        messageClient.sendMessage("key2-20");
-        messageClient.sendMessage("key1-30");
-        messageClient.sendMessage("!!-!!");
+//        MessageClient messageClient = new MessageClient("127.0.0.1", 30);
+//        messageClient.sendMessage("key1-10");
+//        messageClient.sendMessage("key2-20");
+//        messageClient.sendMessage("key1-30");
+//        messageClient.sendMessage("!!-!!");
     }
 
     static Project1Class1 staticMethod(int inputInt) {

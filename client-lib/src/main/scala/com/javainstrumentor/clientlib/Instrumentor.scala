@@ -1,14 +1,20 @@
 package com.javainstrumentor.clientlib
 
+import scala.util.Try
+
 object Instrumentor {
 
-  private var serverUri: String = _
+  private lazy val client: MessageClient = new MessageClient(IPAddress, port)
+  private val IPAddress = Try(System.getProperty(ApplicationConstants.PROPERTY_SERVER_IP)).getOrElse("")
+  private val port = Try(System.getProperty(ApplicationConstants.PROPERTY_SERVER_PORT).toInt).getOrElse(0)
+  private val delimiter = Try(System.getProperty({
+    ApplicationConstants.PROPERTY_SERVER_DELIMITER
+  })).getOrElse("")
 
-  def setServerConfig(uri: String): Unit = ???
+  def log(key: String, value: Any): Unit = {
+    val message = s"$key$delimiter${value.toString}"
 
-  def log(values: Any*): Unit = {
-    println(values.mkString)
-
-    // TODO: Make IPC call to InstrumentorServer
+    // Make IPC call to Instrumentor Server
+    client.sendMessage(message)
   }
 }

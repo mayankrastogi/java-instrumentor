@@ -1,12 +1,14 @@
 package com.javainstrumentor.tool.execution
 
 
-import com.javainstrumentor.tool.Constants.ApplicationConstants
+import com.javainstrumentor.clientlib.ApplicationConstants
+import com.javainstrumentor.tool.Constants.ConfigReader
+import com.typesafe.scalalogging.LazyLogging
 
-import sys.process._
-import language.postfixOps
+import scala.language.postfixOps
+import scala.sys.process._
 
-object JavaProcessExecutor extends App {
+object JavaProcessExecutor extends App with LazyLogging {
 
   /**
     * Compiles and executes the java files
@@ -26,7 +28,15 @@ object JavaProcessExecutor extends App {
         return
     }
     try {
-      val executedResult = ApplicationConstants.JAVA_EXECUTE_COMMAND + cp + " "+ mainFilePath.split("/").takeRight(1).mkString.replace(".java","")  !!
+      val command = ApplicationConstants.JAVA_EXECUTE_COMMAND +
+        s" -D${ApplicationConstants.PROPERTY_SERVER_IP}=${ConfigReader.messageClientIPAddress}" +
+        s" -D${ApplicationConstants.PROPERTY_SERVER_PORT}=${ConfigReader.messageClientPort}" +
+        s" -D${ApplicationConstants.PROPERTY_SERVER_DELIMITER}=${ConfigReader.messageClientDelimiter}" +
+        " -cp " + cp + " " + mainFilePath.split("/").last.replace(".java", "")
+
+      logger.info(s"Running java program: $command")
+
+      val executedResult = command !
 
       println(executedResult)
     }
@@ -46,9 +56,7 @@ object JavaProcessExecutor extends App {
 
     val command = ApplicationConstants.JAVA_COMPILE_COMMAND + cp + " " + mainFilePath
 
-    var compileResult = command !!
-
-    print(compileResult)
+    command !
 
 
   }

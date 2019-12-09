@@ -2,9 +2,11 @@ package com.javainstrumentor.tool.utils
 
 import java.net.URI
 import java.nio.file.{Files, Path, Paths}
+import java.util.Comparator
 
 import scala.io.Source
 import scala.jdk.StreamConverters._
+import scala.util.Try
 
 object IOUtils {
 
@@ -19,6 +21,10 @@ object IOUtils {
       .toScala(List)
       .map(_.normalize.toString)
       .filter(_.endsWith(".java"))
+  }
+
+  def createDirectory(dirName: String): Try[Path] = Try {
+    Files.createDirectory(Paths.get(dirName))
   }
 
   def getJavaFilePathsFromResource(name: String): List[String] = {
@@ -45,5 +51,12 @@ object IOUtils {
     val contents = file.toArray
     file.close()
     contents
+  }
+
+  def deleteDirectory(dirName: String): Try[Unit] = Try {
+    Files
+      .walk(Paths.get(dirName))
+      .sorted(Comparator.reverseOrder())
+      .forEach(_.toFile.delete)
   }
 }

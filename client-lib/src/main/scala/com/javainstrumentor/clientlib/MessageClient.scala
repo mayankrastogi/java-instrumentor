@@ -1,16 +1,17 @@
-package com.javainstrumentor.tool.IPC
+package com.javainstrumentor.clientlib
 
 import java.io._
 import java.net._
-import org.slf4j.{Logger, LoggerFactory}
+
+import com.typesafe.scalalogging.LazyLogging
 
 /**
-  * Opens a socket connection for message passing
-  */
+ * Opens a socket connection for message passing
+ */
 
-class MessageClient(ip: String, port: Int) {
+class MessageClient(ip: String, port: Int) extends LazyLogging {
 
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  logger.info(s"Opening socket connection to, ip: $ip, port: $port")
   val clientSocket = new Socket(ip, port)
   val outputStreamWriter = new PrintWriter(clientSocket.getOutputStream, true)
 

@@ -1,15 +1,31 @@
 package com.javainstrumentor.tool.parsing
 
+import java.nio.file.{Files, Paths}
+
 import com.javainstrumentor.tool.utils.IOUtils
 import com.typesafe.scalalogging.LazyLogging
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.dom.{AST, ASTParser, CompilationUnit}
 
-case class JavaProject(projectDir: String, resolveFromResources: Boolean = false) extends LazyLogging {
+case class JavaProject(projectDir: String, outputDir: String, resolveFromResources: Boolean = false) extends LazyLogging {
 
   logger.debug(s"Created new JavaProject(projectDir: $projectDir, resolveFromResources: $resolveFromResources)")
 
   lazy val parsedSources: Map[String, CompilationUnit] = parseASTs
+
+  def writeInstrumentedProject(): Unit = {
+    try {
+      IOUtils.deleteDirectory(outputDir)
+      IOUtils.createDirectory(outputDir).toEither.swap.map(e => logger.error("create directory failed", e))
+      parsedSources.foreach { case (sourcePath, ast) =>
+        val path = Paths.get(outputDir, sourcePath.replace(resolvedProjectDir, ""))
+        Files.writeString(path, ast.toString)
+      }
+    }
+    catch {
+      case e: Exception => logger.error("Writing failed!", e)
+    }
+  }
 
   private def parseASTs: Map[String, CompilationUnit] = {
     logger.trace("Parsing ASTs...")

@@ -19,8 +19,8 @@ object Driver extends App {
   projects.foreach(project => {
 
 
-    val mainFile = project.split("/").takeRight(1).mkString
-    val classPath = project.replace(mainFile, "") + ":" + System.getProperty("java.class.path").split(" ")(0)
+    val mainFile = project.split("/").last
+    val classPath = project.replace(mainFile, "") + ";" + System.getProperty("java.class.path").split(" ")(0)
 
 
     //TODO : Extract AST and instrument code
