@@ -7,6 +7,8 @@ public class Project1Main {
     public static final int STATIC_VARIABLE = 0;
 
     public static void main(String[] args) {
+        Project1Main test;
+
         Project1Main inferredTypeVariable = new Project1Main();
         String staticTypeVariable = "'Test input literal'";
 
