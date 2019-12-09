@@ -24,7 +24,7 @@ object IOUtils {
   }
 
   def createDirectory(dirName: String): Try[Path] = Try {
-    Files.createDirectory(Paths.get(dirName))
+    Files.createDirectories(Paths.get(dirName))
   }
 
   def getJavaFilePathsFromResource(name: String): List[String] = {
