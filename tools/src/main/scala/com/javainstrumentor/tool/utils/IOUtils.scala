@@ -44,7 +44,7 @@ object IOUtils {
    * @param filePath The file path.
    * @return The file name.
    */
-  def getFileName(filePath: String): String = filePath.stripPrefix("'").stripSuffix("/").split("/").last
+  def getFileName(filePath: String): String = Paths.get(filePath).getFileName.toString
 
   def readFile(path: String): Array[Char] = {
     val file = Source.fromFile(path)
