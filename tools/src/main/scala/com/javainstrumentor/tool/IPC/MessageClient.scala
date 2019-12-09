@@ -1,9 +1,7 @@
-package com.javainstrumentor.IPC
+package com.javainstrumentor.tool.IPC
 
 import java.io._
 import java.net._
-
-import com.javainstrumentor.Constants.ApplicationConstants
 import org.slf4j.{Logger, LoggerFactory}
 
 /**
@@ -28,13 +26,13 @@ class MessageClient(ip: String, port: Int) {
 
 }
 
-object MessageClient {
-  def main(args: Array[String]): Unit = {
-    val socketClient = new MessageClient(ApplicationConstants.SERVER_IP, ApplicationConstants.SOCKET_PORT)
-
-    val messages = List("Hi", "hello", "another message", "good bye", "!!")
-
-    messages.foreach(message => socketClient.sendMessage(message))
-
-  }
-}
+//object MessageClient {
+//  def main(args: Array[String]): Unit = {
+//    val socketClient = new MessageClient(ApplicationConstants.SERVER_IP, ApplicationConstants.SOCKET_PORT)
+//
+//    val messages = List("Hi", "hello", "another message", "good bye", "!!")
+//
+//    messages.foreach(message => socketClient.sendMessage(message))
+//
+//  }
+//}

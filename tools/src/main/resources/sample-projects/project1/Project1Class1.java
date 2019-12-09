@@ -1,8 +1,9 @@
-package sampleprojects.project1;
+//package sampleprojects.project1;
 
 /**
  * Javadoc comment for {@link Project1Class1}.
  */
+
 public class Project1Class1 {
     // Normal comment
     String name;
