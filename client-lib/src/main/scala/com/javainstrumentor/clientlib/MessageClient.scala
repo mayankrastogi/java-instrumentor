@@ -8,7 +8,6 @@ import com.typesafe.scalalogging.LazyLogging
 /**
  * Opens a socket connection for message passing
  */
-
 class MessageClient(ip: String, port: Int) extends LazyLogging {
 
   logger.info(s"Opening socket connection to, ip: $ip, port: $port")
@@ -26,14 +25,3 @@ class MessageClient(ip: String, port: Int) extends LazyLogging {
   }
 
 }
-
-//object MessageClient {
-//  def main(args: Array[String]): Unit = {
-//    val socketClient = new MessageClient(ApplicationConstants.SERVER_IP, ApplicationConstants.SOCKET_PORT)
-//
-//    val messages = List("Hi", "hello", "another message", "good bye", "!!")
-//
-//    messages.foreach(message => socketClient.sendMessage(message))
-//
-//  }
-//}
