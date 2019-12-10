@@ -1,6 +1,5 @@
 package com.javainstrumentor.tool.parsing
 
-import com.javainstrumentor.tool.Launcher.{project1OutputPath, project1Path}
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
 
 class Instrumentor {

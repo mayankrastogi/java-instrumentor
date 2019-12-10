@@ -9,21 +9,28 @@ import org.slf4j.{Logger, LoggerFactory}
 
 /**
   *
-  * IPC server which listens to client's message at specific port
+  * IPC server which listens to client's message at specific port.
+  *
+  * Implements runnable, should be started in a separate thread as Instrumented code will be executed in a separate JVM for parallel IPC
   *
   * @param map Map having instrumented variables whose values will be sent by the instrumented execution
+  *
+  *            Captures the values sent by the instrumented code
   */
 
 class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
+
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 
   //Placeholder to indicate whether server started listening to the client's message
   var started: Boolean = false
 
+
   /**
-    * Start's listening to client's messages
+    * Start's listening to client's messages and update the scope table with the values for corresponding messages
     */
+
   def start(): Unit = {
     logger.info("Connecting......")
     val serverSocket = new ServerSocket(ConfigReader.messageClientPort)
@@ -33,14 +40,17 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
 
     logger.info("is client connected to server ? : {} ", clientSocket.isConnected)
 
-    //    val out = new PrintWriter(clientSocket.getOutputStream, true)
 
     //Input reader from the client
     val in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream))
 
     logger.info("Ready ? {} ", in.ready())
+
+
     var inComingMessage = ""
+
     try {
+
       while ((inComingMessage = in.readLine()) != null) {
 
         logger.info("Recieving message : {} ", inComingMessage)
@@ -52,9 +62,12 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
         // If the scope table has the variable associated with the message
         if (map.contains(key)) {
           val scopeTableItem = map(key)
+
           logger.info("Appending {} to key {} ", value, key)
+
           scopeTableItem.values += value
-          logger.debug("scope item value {} ", scopeTableItem.values)
+
+          logger.debug(" Updated scope item value {} ", scopeTableItem.values)
         }
 
       }
@@ -65,7 +78,6 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
     finally {
       serverSocket.close()
       clientSocket.close()
-      //      out.close()
       in.close()
     }
 

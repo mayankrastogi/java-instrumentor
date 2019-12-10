@@ -1,23 +1,24 @@
 package com.javainstrumentor.tool
 
 import com.javainstrumentor.tool.Constants.ConfigReader
-import com.javainstrumentor.tool.Driver.executor
 import com.javainstrumentor.tool.IPC.SocketServer
 import com.javainstrumentor.tool.execution.JavaProcessExecutor
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
 import com.javainstrumentor.tool.parsing.{InstrumentationVisitor, Instrumentor, JavaProject}
 import com.typesafe.scalalogging.LazyLogging
 
+/**
+  * Launcher that orchestrates ASTParsing, code Instrumentation, Scope table creation, Setting up IPC and executing instrumented code in a separate JVM
+  */
 object Launcher extends App with LazyLogging {
 
-  val project1Path = "sample-projects/project1"
-  val project1OutputPath = "code-gen/project1"
-
+  // Extract the project paths to be parsed and instrumented
   val projects = ConfigReader.projects
   val executor = new JavaProcessExecutor
   val instrumentor = new Instrumentor
 
 
+  //For every project
   projects.foreach(project => {
 
 
@@ -30,7 +31,6 @@ object Launcher extends App with LazyLogging {
     logger.info("Instrumenting project... {} ", projectInputPath)
 
 
-    //Instruments and writes the instrumented code to the output path
     val scopeTable: Map[String, ScopeTableItem] = instrumentor.instrumentAndFindScopeTable(projectInputPath, projectOutputPath)
 
 

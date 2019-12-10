@@ -9,6 +9,11 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.language.postfixOps
 import scala.sys.process._
 
+
+/**
+  * Creates new Java process
+  * Compiles and executes the project in a separate process
+  */
 class JavaProcessExecutor extends LazyLogging {
 
 
@@ -53,13 +58,15 @@ class JavaProcessExecutor extends LazyLogging {
   }
 
   /**
-    * Compiles java code: javac
+    * * Compiles java code. Creates a Javac Command using the classpath and the file having main class
+    * * ex: javac -cp class/path1:classpath2 main.java
     *
-    * @param files
+    * @param cp       the class path for the project to be compiled
+    * @param mainFile The filename having main method
     */
-  private def compileJavaCode(cp: String, mainFilePath: String): Unit = {
+  private def compileJavaCode(cp: String, mainFile: String): Unit = {
 
-    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFilePath"
+    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFile"
 
     logger.info("Running command {}", command)
     command !
