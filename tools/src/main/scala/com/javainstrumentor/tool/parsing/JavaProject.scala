@@ -2,6 +2,7 @@ package com.javainstrumentor.tool.parsing
 
 import java.nio.file.{Files, Paths}
 
+import com.javainstrumentor.tool.parsing.scopetable.ScopeTable.ScopeTable
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
 import com.javainstrumentor.tool.utils.IOUtils
 import com.typesafe.scalalogging.LazyLogging
@@ -37,14 +38,14 @@ case class JavaProject(projectDir: String, outputDir: String, resolveFromResourc
    */
   lazy val parsedSources: Map[String, CompilationUnit] = parseASTs
 
-  private var _scopeTable: Option[Map[String, ScopeTableItem]] = None
+  private var _scopeTable: Option[ScopeTable] = None
 
   /**
    * The scope table of all the source files of the project, populated during the instrumentation step.
    *
    * @return The scope table if the project has been instrumented, `None` if the project has not been instrumented yet.
    */
-  def scopeTable: Option[Map[String, ScopeTableItem]] = _scopeTable
+  def scopeTable: Option[ScopeTable] = _scopeTable
 
   /**
    * Parses the ASTs, inserts instrumentation log statements, and builds the scope table.

@@ -4,6 +4,7 @@ import com.javainstrumentor.tool.Constants.ConfigReader
 import com.javainstrumentor.tool.IPC.SocketServer
 import com.javainstrumentor.tool.execution.JavaProcessExecutor
 import com.javainstrumentor.tool.parsing.JavaProject
+import com.javainstrumentor.tool.parsing.scopetable.ScopeTable._
 import com.typesafe.scalalogging.LazyLogging
 
 object Launcher extends App with LazyLogging {
@@ -36,6 +37,8 @@ object Launcher extends App with LazyLogging {
         .scopeTable
         .get
 
+    logger.info(s"Generated Scope Table:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
+
     val server = new SocketServer(scopeTable)
 
     val serverThread = new Thread(server)
@@ -57,8 +60,8 @@ object Launcher extends App with LazyLogging {
 
     logger.info("updated Scope Table")
     logger.info("*********************************")
-    server.map.values.foreach(item => println(item.values))
 
+    logger.info(s"Scope Table after execution of instrumented program:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
 
   })
 
