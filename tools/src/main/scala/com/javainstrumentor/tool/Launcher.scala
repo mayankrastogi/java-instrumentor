@@ -3,8 +3,8 @@ package com.javainstrumentor.tool
 import com.javainstrumentor.tool.Constants.ConfigReader
 import com.javainstrumentor.tool.IPC.SocketServer
 import com.javainstrumentor.tool.execution.JavaProcessExecutor
-import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
-import com.javainstrumentor.tool.parsing.{InstrumentationVisitor, Instrumentor, JavaProject}
+import com.javainstrumentor.tool.parsing.JavaProject
+import com.javainstrumentor.tool.parsing.scopetable.ScopeTable._
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -15,7 +15,7 @@ object Launcher extends App with LazyLogging {
   // Extract the project paths to be parsed and instrumented
   val projects = ConfigReader.projects
   val executor = new JavaProcessExecutor
-  val instrumentor = new Instrumentor
+  //  val instrumentor = new Instrumentor
 
 
   //For every project
@@ -31,11 +31,17 @@ object Launcher extends App with LazyLogging {
     logger.info("Instrumenting project... {} ", projectInputPath)
 
 
-    val scopeTable: Map[String, ScopeTableItem] = instrumentor.instrumentAndFindScopeTable(projectInputPath, projectOutputPath)
+    //Instruments and writes the instrumented code to the output path
+    val scopeTable =
+      JavaProject(projectInputPath, projectOutputPath, resolveFromResources = true)
+        .instrument
+        .writeInstrumentedProject()
+        .scopeTable
+        .get
 
+    logger.info(s"Generated Scope Table:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
 
     val server = new SocketServer(scopeTable)
-
 
     val serverThread = new Thread(server)
 
@@ -56,8 +62,8 @@ object Launcher extends App with LazyLogging {
 
     logger.info("updated Scope Table")
     logger.info("*********************************")
-    server.map.values.foreach(item => println(item.values))
 
+    logger.info(s"Scope Table after execution of instrumented program:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
 
   })
 

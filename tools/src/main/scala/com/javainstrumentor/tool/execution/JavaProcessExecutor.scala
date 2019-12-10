@@ -19,14 +19,15 @@ class JavaProcessExecutor extends LazyLogging {
 
   val systemClassPath: String = System.getProperty("java.class.path").split(" ")(0)
 
+  val cpDelimiter: String = if (System.getProperty("os.name").toLowerCase.startsWith("windows")) ";" else ":"
 
   /**
-    * Compiles and executes the java files
-    *
-    * @param args         the command line args to be given to executing project
-    * @param mainFilePath name of the java class that has main method
-    * @param cp           the classpath
-    */
+   * Compiles and executes the java files
+   *
+   * @param args         the command line args to be given to executing project
+   * @param mainFilePath name of the java class that has main method
+   * @param cp           the classpath
+   */
   def compileAndExecute(mainFilePath: String, cp: String, args: Option[String] = None) {
 
     //Compiling the java code
@@ -42,7 +43,7 @@ class JavaProcessExecutor extends LazyLogging {
         s" -D${ApplicationConstants.PROPERTY_SERVER_IP}=${ConfigReader.messageClientIPAddress}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_PORT}=${ConfigReader.messageClientPort}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_DELIMITER}=${ConfigReader.messageClientDelimiter}" +
-        " -cp " + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath" + " " + mainFilePath.split("/").last.replace(".java", "")
+        " -cp " + s"${IOUtils.resolveAbsolutePath(cp)}$cpDelimiter$systemClassPath" + " " + mainFilePath.split("/").last.replace(".java", "")
 
       logger.info(s"Running java program: $command")
 
@@ -66,7 +67,7 @@ class JavaProcessExecutor extends LazyLogging {
     */
   private def compileJavaCode(cp: String, mainFile: String): Unit = {
 
-    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFile"
+    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}$cpDelimiter$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFile"
 
     logger.info("Running command {}", command)
     command !
