@@ -4,7 +4,7 @@ version := "0.1"
 
 scalaVersion in ThisBuild := "2.13.1"
 
-//scalacOptions in ThisBuild += "-target:jvm-1.11"
+scalacOptions in ThisBuild += "-target:jvm-1.11"
 
 
 // Logback logging framework

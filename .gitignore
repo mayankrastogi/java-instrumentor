@@ -129,4 +129,5 @@ project/plugins/project/
 ### Scala ###
 .*
 
+code-gen
 # End of https://www.gitignore.io/api/sbt,java,scala,intellij+all

@@ -3,12 +3,17 @@ package com.javainstrumentor.tool.execution
 
 import com.javainstrumentor.clientlib.ApplicationConstants
 import com.javainstrumentor.tool.Constants.ConfigReader
+import com.javainstrumentor.tool.utils.IOUtils
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.language.postfixOps
 import scala.sys.process._
 
-object JavaProcessExecutor extends App with LazyLogging {
+class JavaProcessExecutor extends LazyLogging {
+
+
+  val systemClassPath: String = System.getProperty("java.class.path").split(" ")(0)
+
 
   /**
     * Compiles and executes the java files
@@ -32,7 +37,7 @@ object JavaProcessExecutor extends App with LazyLogging {
         s" -D${ApplicationConstants.PROPERTY_SERVER_IP}=${ConfigReader.messageClientIPAddress}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_PORT}=${ConfigReader.messageClientPort}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_DELIMITER}=${ConfigReader.messageClientDelimiter}" +
-        " -cp " + cp + " " + mainFilePath.split("/").last.replace(".java", "")
+        " -cp " + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath" + " " + mainFilePath.split("/").last.replace(".java", "")
 
       logger.info(s"Running java program: $command")
 
@@ -54,8 +59,9 @@ object JavaProcessExecutor extends App with LazyLogging {
     */
   private def compileJavaCode(cp: String, mainFilePath: String): Unit = {
 
-    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + cp + " " + mainFilePath
+    val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}${ApplicationConstants.CP_DELIMITER}$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFilePath"
 
+    logger.info("Running command {}", command)
     command !
 
 

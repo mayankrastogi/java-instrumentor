@@ -1,9 +1,10 @@
 package com.javainstrumentor.tool.IPC
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.{BufferedReader, InputStreamReader, PrintWriter}
 import java.net.{ServerSocket, Socket}
 
 import com.javainstrumentor.tool.Constants.ConfigReader
+import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
 import org.slf4j.{Logger, LoggerFactory}
 
 /**
@@ -13,7 +14,7 @@ import org.slf4j.{Logger, LoggerFactory}
   * @param map Map having instrumented variables whose values will be sent by the instrumented execution
   */
 
-class SocketServer(val map: Map[String, Int]) extends Runnable {
+class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
 
@@ -26,6 +27,7 @@ class SocketServer(val map: Map[String, Int]) extends Runnable {
   def start(): Unit = {
     logger.info("Connecting......")
     val serverSocket = new ServerSocket(ConfigReader.messageClientPort)
+    logger.info("Started server socket connection at {}:{} ", ConfigReader.messageClientIPAddress, ConfigReader.messageClientPort)
     started = true
     val clientSocket: Socket = serverSocket.accept()
 
@@ -36,27 +38,29 @@ class SocketServer(val map: Map[String, Int]) extends Runnable {
     //Input reader from the client
     val in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream))
 
+    logger.info("Ready ? {} ", in.ready())
+    var inComingMessage = ""
     try {
-      while (in.ready()) {
-        val inComingMessage = in.readLine()
+      while ((inComingMessage = in.readLine()) != null) {
+
         logger.info("Recieving message : {} ", inComingMessage)
-        //      val key = inComingMessage.split(ConfigReader.messageClientDelimiter)(0)
-        //      val value = inComingMessage.split(ConfigReader.messageClientDelimiter)(1)
-        //
-        //      logger.debug("new value in map for key {} is {} : ", key, value)
-        //      if (map.contains(key)) {
-        //        logger.debug("old value in map for key {} is {} : ", key, map(key))
-        //        logger.debug("new value in map for key {} is {} : ", key, value)
-        //      }
-        //      if ("!!-!!".equals(inComingMessage)) {
-        //        out.println("Good bye!!")
-        //        started = false
-        //        return
-        //      }
+        val key = inComingMessage.split(ConfigReader.messageClientDelimiter)(0)
+        val value = inComingMessage.split(ConfigReader.messageClientDelimiter)(1)
+
+        logger.debug("key {} is {} : ", key, value)
+
+        // If the scope table has the variable associated with the message
+        if (map.contains(key)) {
+          val scopeTableItem = map(key)
+          logger.info("Appending {} to key {} ", value, key)
+          scopeTableItem.values += value
+          logger.debug("scope item value {} ", scopeTableItem.values)
+        }
+
       }
     }
     catch {
-      case e: Exception => logger.error("MessageServer connection terminated.", e)
+      case e: Exception => {}
     }
     finally {
       serverSocket.close()

@@ -1,7 +1,11 @@
 package com.javainstrumentor.tool
 
+import com.javainstrumentor.tool.Constants.ConfigReader
+import com.javainstrumentor.tool.Driver.executor
+import com.javainstrumentor.tool.IPC.SocketServer
+import com.javainstrumentor.tool.execution.JavaProcessExecutor
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
-import com.javainstrumentor.tool.parsing.{InstrumentationVisitor, JavaProject}
+import com.javainstrumentor.tool.parsing.{InstrumentationVisitor, Instrumentor, JavaProject}
 import com.typesafe.scalalogging.LazyLogging
 
 object Launcher extends App with LazyLogging {
@@ -9,20 +13,52 @@ object Launcher extends App with LazyLogging {
   val project1Path = "sample-projects/project1"
   val project1OutputPath = "code-gen/project1"
 
-  val project1 = JavaProject(project1Path, project1OutputPath, resolveFromResources = true)
+  val projects = ConfigReader.projects
+  val executor = new JavaProcessExecutor
+  val instrumentor = new Instrumentor
 
-  var scopeTable: Map[String, ScopeTableItem] = Map.empty
 
-  project1.parsedSources.foreach { case (path, ast) =>
-    val visitor = new InstrumentationVisitor(ast, path)
-    ast.accept(visitor)
-    scopeTable ++= visitor.scopeTable
-    //    println(visitor.scopeTable)
-    println(ast)
-  }
+  projects.foreach(project => {
 
-  println("ScopeTable: ")
-  scopeTable.values.foreach(println)
 
-  project1.writeInstrumentedProject()
+    val projectInputPath = project.getString(ConfigReader.projectInput)
+
+    val projectOutputPath = project.getString(ConfigReader.projectOutput)
+
+    val mainClass = project.getString(ConfigReader.mainClass)
+
+    logger.info("Instrumenting project... {} ", projectInputPath)
+
+
+    //Instruments and writes the instrumented code to the output path
+    val scopeTable: Map[String, ScopeTableItem] = instrumentor.instrumentAndFindScopeTable(projectInputPath, projectOutputPath)
+
+
+    val server = new SocketServer(scopeTable)
+
+
+    val serverThread = new Thread(server)
+
+    serverThread.start()
+
+    //Wait for the IPC server to start
+    while (!server.started) {
+      logger.debug("waiting to get started....")
+    }
+
+    logger.debug("Waiting for the instrumented JVM process...")
+
+    //Compile and execute on a separate JVM
+    executor.compileAndExecute(mainClass, projectOutputPath)
+    logger.debug("Joining the thread")
+    serverThread.join()
+    logger.debug("after Joining the thread")
+
+    logger.info("updated Scope Table")
+    logger.info("*********************************")
+    server.map.values.foreach(item => println(item.values))
+
+
+  })
+
 }
