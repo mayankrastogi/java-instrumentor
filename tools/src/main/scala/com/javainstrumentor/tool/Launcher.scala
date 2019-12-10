@@ -1,11 +1,9 @@
 package com.javainstrumentor.tool
 
 import com.javainstrumentor.tool.Constants.ConfigReader
-import com.javainstrumentor.tool.Driver.executor
 import com.javainstrumentor.tool.IPC.SocketServer
 import com.javainstrumentor.tool.execution.JavaProcessExecutor
-import com.javainstrumentor.tool.parsing.scopetable.ScopeTableItem
-import com.javainstrumentor.tool.parsing.{InstrumentationVisitor, Instrumentor, JavaProject}
+import com.javainstrumentor.tool.parsing.JavaProject
 import com.typesafe.scalalogging.LazyLogging
 
 object Launcher extends App with LazyLogging {
@@ -15,7 +13,7 @@ object Launcher extends App with LazyLogging {
 
   val projects = ConfigReader.projects
   val executor = new JavaProcessExecutor
-  val instrumentor = new Instrumentor
+  //  val instrumentor = new Instrumentor
 
 
   projects.foreach(project => {
@@ -31,11 +29,14 @@ object Launcher extends App with LazyLogging {
 
 
     //Instruments and writes the instrumented code to the output path
-    val scopeTable: Map[String, ScopeTableItem] = instrumentor.instrumentAndFindScopeTable(projectInputPath, projectOutputPath)
-
+    val scopeTable =
+      JavaProject(projectInputPath, projectOutputPath, resolveFromResources = true)
+        .instrument
+        .writeInstrumentedProject()
+        .scopeTable
+        .get
 
     val server = new SocketServer(scopeTable)
-
 
     val serverThread = new Thread(server)
 
