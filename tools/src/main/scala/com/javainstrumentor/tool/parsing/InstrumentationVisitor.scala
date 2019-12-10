@@ -124,19 +124,6 @@ class InstrumentationVisitor(compilationUnit: CompilationUnit, filePath: String)
           )
           _scopeTable(scope.id) = scope
 
-          //          val methodInstrumentation = ast.newMethodInvocation()
-          //
-          //          methodInstrumentation.setExpression(ast.newName(Instrumentor.getClass.getSimpleName.stripSuffix("$")))
-          //          methodInstrumentation.setName(ast.newSimpleName("log"))
-          //          val args = List[Expression](
-          //            newStringLiteral(ast, scope.id),
-          //            ast.newName(f.getName.getIdentifier)
-          //          )
-          //
-          //          methodInstrumentation.arguments().asInstanceOf[util.List[Expression]].addAll(args.asJava)
-          //
-          //          val insertionIndex = statements.indexOf(node) + 1
-          //          statements.add(insertionIndex, ast.newExpressionStatement(methodInstrumentation))
         }
     }
 
