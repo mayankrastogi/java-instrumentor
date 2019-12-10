@@ -39,11 +39,11 @@ object IOUtils {
   def resolvePathStringToResource(name: String): String = resolvePathToResource(name).toString
 
   /**
-   * Extracts the file name from a file path.
-   *
-   * @param filePath The file path.
-   * @return The file name.
-   */
+    * Extracts the file name from a file path.
+    *
+    * @param filePath The file path.
+    * @return The file name.
+    */
   def getFileName(filePath: String): String = Paths.get(filePath).getFileName.toString
 
   def readFile(path: String): Array[Char] = {
@@ -58,5 +58,17 @@ object IOUtils {
       .walk(Paths.get(dirName))
       .sorted(Comparator.reverseOrder())
       .forEach(_.toFile.delete)
+  }
+
+  /**
+    * Generates absolute path for the given path
+    *
+    * @param path relative path
+    * @return the absolute path given to this path
+    */
+  def resolveAbsolutePath(path: String): String = {
+
+    Paths.get(path).toAbsolutePath.toString
+
   }
 }
