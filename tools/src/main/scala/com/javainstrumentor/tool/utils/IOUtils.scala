@@ -75,7 +75,8 @@ object IOUtils {
   def stripSourceDirFromPath(path: String, sourceDir: String): String = {
     val normalizedPath = path.replaceAll("\\\\", "/")
     val normalizedSourceDir = sourceDir.replaceAll("\\\\", "/")
+    val nLength = normalizedPath.indexOf(normalizedSourceDir)
 
-    normalizedPath.substring(normalizedPath.indexOf(normalizedSourceDir) + normalizedSourceDir.length)
+    if (nLength < 0) normalizedPath else normalizedPath.substring(nLength + normalizedSourceDir.length)
   }
 }
