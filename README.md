@@ -4,7 +4,7 @@
 Team Members:
 
 - Mayank K Rastogi
-- Mohammed Siddiq
+- Mohammed Siddiq (Leader)
 - Bharath Koneti  
 
 
