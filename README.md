@@ -33,7 +33,7 @@ sbt run
 ![Execution Flow](flowdiagram.jpeg)
 
 
---
+---
 
 The parser takes the Java project extracts the java files from the project and generates AST for each .java file
  
@@ -120,16 +120,54 @@ and inserting instrumentation logging statements into the program.
 ## Tests covered in the testing module
 
 
-```Scala
+```text
 
-  test("A JavaProject, when parsed" must
-    -  "parse ASTs for all source files in the project" 
-    - "have the same structure as the input source files" )
 
-  test("A JavaProject, when instrumented" must
-    - "add import statement for the Instrumentor client library in all source files" 
-    - "add instrumentation log statements for all method declarations" )
- 
+[info] Loading global plugins from C:\Users\send2\.sbt\1.0\plugins
+[info] Loading project definition from D:\Projects\cs474\mohammed_siddiq_project\project
+[info] Loading settings for project root from build.sbt ...
+[info] Set current project to java-instrumentor (in build file:/D:/Projects/cs474/mohammed_siddiq_project/)
+[success] Total time: 0 s, completed Dec 10, 2019, 10:45:03 PM
+[info] Updating ...
+[info] Updating clientLib...
+[info] Done updating.
+[info] Updating tools...
+[info] Compiling 3 Scala sources to D:\Projects\cs474\mohammed_siddiq_project\client-lib\target\scala-2.13\classes ...
+[info] Done updating.
+[info] Done compiling.
+[info] Done updating.
+[info] Run completed in 15 milliseconds.
+[info] Total number of tests run: 0
+[info] Suites: completed 0, aborted 0
+[info] Tests: succeeded 0, failed 0, canceled 0, ignored 0, pending 0
+[info] No tests were executed.
+[info] Compiling 9 Scala sources to D:\Projects\cs474\mohammed_siddiq_project\tools\target\scala-2.13\classes ...
+[info] Done compiling.
+[info] Compiling 2 Scala sources to D:\Projects\cs474\mohammed_siddiq_project\tools\target\scala-2.13\test-classes ...
+[info] Done compiling.
+[info] TestJavaProject:
+[info] A JavaProject, when parsed
+[info] - must parse ASTs for all source files in the project
+[info] - must have the same structure as the input source files
+[info] A JavaProject, when instrumented
+[info] - must add import statement for the Instrumentor client library in all source files
+[info] - must add instrumentation log statements for all method declarations
+[info] - must add instrumentation log statements for all assignment expressions
+[info] - must add an entry in the scope table for all method declarations and their parameters
+[info] - must add an entry in the scope table for all variable declarations
+[info] TestExecutor:
+[info] JavaExecutor
+[info] - should sucessfully compile given the classpath and file
+[info] JavaExecuctor
+[info] - should successfully execute the given file
+[info] Run completed in 1 second, 602 milliseconds.
+[info] Total number of tests run: 9
+[info] Suites: completed 2, aborted 0
+[info] Tests: succeeded 9, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[success] Total time: 10 s, completed Dec 10, 2019, 10:45:13 PM
+
+
 ```
 
 
@@ -365,8 +403,6 @@ Scope Table after Execution of the instrumented program
      MonteCarloTreeSearch.java |     11 |      MonteCarloTreeSearch |           MonteCarloTreeSearch |                                                              |           MonteCarloTreeSearch |                         /MonteCarloTreeSearch.java |                                                                           LMonteCarloTreeSearch;.()V | 
      MonteCarloTreeSearch.java |     15 |                  getLevel |                            int |                                                              |           MonteCarloTreeSearch |                         /MonteCarloTreeSearch.java |                                                                   LMonteCarloTreeSearch;.getLevel()I | 
      MonteCarloTreeSearch.java |     19 |                     level |                            int |                                                          N/A |                            N/A |                         /MonteCarloTreeSearch.java |                                                        LMonteCarloTreeSearch;.setLevel(I)V#level#0#0 | 1, 3
-     
-     
 
 
 ```
