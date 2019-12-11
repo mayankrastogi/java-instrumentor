@@ -86,6 +86,21 @@ class InstrumentationVisitor(compilationUnit: CompilationUnit, filePath: String)
     */
   def createInstrumentationLogStatement(ast: AST, id: String, identifier: String): MethodInvocation = {
     logger.trace(s"createInstrumentationLogStatement(ast: $ast, id: $id, identifier: $identifier)")
+    createInstrumentationLogStatement(ast, id, ast.newName(identifier))
+  }
+
+  /**
+   * Creates a [[org.eclipse.jdt.core.dom.MethodInvocation]] expression that can be inserted in a block of statements
+   * for logging the value of a variable using the [[com.javainstrumentor.clientlib.Instrumentor#log]] method of the
+   * client library.
+   *
+   * @param ast        The Abstract syntax tree that will be the owner of the method invocation statement.
+   * @param id         The unique identifier of the variable which can be obtained using `node.resolveBinding.getKey()`.
+   * @param identifier The identifier expression.
+   * @return The method invocation statement for logging the value of the variable.
+   */
+  def createInstrumentationLogStatement(ast: AST, id: String, identifier: Expression): MethodInvocation = {
+    logger.trace(s"createInstrumentationLogStatement(ast: $ast, id: $id, identifier: $identifier)")
 
     val logStatement = ast.newMethodInvocation()
 
@@ -94,7 +109,7 @@ class InstrumentationVisitor(compilationUnit: CompilationUnit, filePath: String)
 
     val args = List(
       newStringLiteral(ast, id),
-      ast.newName(identifier)
+      ASTNode.copySubtree(ast, identifier).asInstanceOf[Expression]
     )
     logger.debug(s"args: $args")
 
@@ -253,9 +268,11 @@ class InstrumentationVisitor(compilationUnit: CompilationUnit, filePath: String)
         logger.info(s"Adding instrumentation log statement for the LHS of the assignment.")
 
         val ast = block.getAST
+
         val (key, name) = node.getLeftHandSide match {
-          case lhs: Name => (lhs.resolveBinding().getKey, lhs.getFullyQualifiedName)
-          case lhs: FieldAccess => (lhs.resolveFieldBinding().getKey, lhs.toString)
+          case lhs: Name => (lhs.resolveBinding().getKey, lhs)
+          case lhs: FieldAccess => (lhs.resolveFieldBinding().getKey, lhs)
+          case _ => return super.visit(node)
         }
 
         logger.debug(s"lhs: ${(key, name)}")
@@ -267,6 +284,8 @@ class InstrumentationVisitor(compilationUnit: CompilationUnit, filePath: String)
 
         val insertionIndex = statements.indexOf(node.getParent) + 1
         statements.add(insertionIndex, ast.newExpressionStatement(logStatement))
+
+      case _ => ()
     }
     super.visit(node)
   }

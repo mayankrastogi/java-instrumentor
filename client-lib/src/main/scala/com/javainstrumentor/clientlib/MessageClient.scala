@@ -15,7 +15,7 @@ class MessageClient(ip: String, port: Int) extends LazyLogging {
   val outputStreamWriter = new PrintWriter(clientSocket.getOutputStream, true)
 
   def sendMessage(message: String): Unit = {
-    logger.info("Sending message {} to {}:{} ", message, ip, port)
+    logger.trace("Sending message {} to {}:{} ", message, ip, port)
     outputStreamWriter.println(message)
   }
 

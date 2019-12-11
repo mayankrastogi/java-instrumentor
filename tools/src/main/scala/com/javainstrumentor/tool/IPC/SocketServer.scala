@@ -1,6 +1,6 @@
 package com.javainstrumentor.tool.IPC
 
-import java.io.{BufferedReader, InputStreamReader, PrintWriter}
+import java.io.{BufferedReader, InputStreamReader}
 import java.net.{ServerSocket, Socket}
 
 import com.javainstrumentor.tool.Constants.ConfigReader
@@ -54,7 +54,7 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
 
       while ((inComingMessage = in.readLine()) != null) {
 
-        logger.info("Recieving message : {} ", inComingMessage)
+        logger.debug("Recieving message : {} ", inComingMessage)
         val key = inComingMessage.split(ConfigReader.messageClientDelimiter)(0)
         val value = inComingMessage.split(ConfigReader.messageClientDelimiter)(1)
 
@@ -64,7 +64,7 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
         if (map.contains(key)) {
           val scopeTableItem = map(key)
 
-          logger.info("Appending {} to key {} ", value, key)
+          logger.debug("Appending {} to key {} ", value, key)
 
           scopeTableItem.values += value
 
@@ -74,7 +74,7 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
       }
     }
     catch {
-      case e: Exception => {}
+      case _: Exception => ()
     }
     finally {
       serverSocket.close()
