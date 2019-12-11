@@ -1,4 +1,6 @@
 # Course Project - CS474 
+
+
 ### Instrumentation program that takes syntactically correct source code of some java applications from public repo
 
 Team Members:
@@ -8,9 +10,8 @@ Team Members:
 - Bharath Koneti  
 
 
-**How to start**
 
-Run an application:
+### Run an application:
 
 - Clone this Repo
 ```
@@ -32,9 +33,7 @@ sbt run
 ![Execution Flow](flowdiagram.jpeg)
 
 
-
-### 
-
+--
 
 The parser takes the Java project extracts the java files from the project and generates AST for each .java file
  
@@ -80,6 +79,7 @@ the existing code, socket server is instantiated in a new thread which updates t
 
 ##  Project Structure
 
+
 The project is structured into two modules :
 
 1. Client-lib : The client library which will be used to instrument values  and 'message pass' the values to 
@@ -118,6 +118,7 @@ and inserting instrumentation logging statements into the program.
 
 
 ## Tests covered in the testing module
+
 
 ```Scala
 
