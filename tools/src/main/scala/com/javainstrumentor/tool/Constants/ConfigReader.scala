@@ -19,4 +19,5 @@ object ConfigReader {
   val projectInput = "input-path"
   val projectOutput = "output-path"
   val mainClass = "main-class"
+  val args = "args"
 }

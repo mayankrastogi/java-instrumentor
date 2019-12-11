@@ -22,13 +22,13 @@ class JavaProcessExecutor extends LazyLogging {
   val cpDelimiter: String = if (System.getProperty("os.name").toLowerCase.startsWith("windows")) ";" else ":"
 
   /**
-   * Compiles and executes the java files
-   *
-   * @param args         the command line args to be given to executing project
-   * @param mainFilePath name of the java class that has main method
-   * @param cp           the classpath
-   */
-  def compileAndExecute(mainFilePath: String, cp: String, args: Option[String] = None) {
+    * Compiles and executes the java files
+    *
+    * @param args         the command line args to be given to executing project
+    * @param mainFilePath name of the java class that has main method
+    * @param cp           the classpath
+    */
+  def compileAndExecute(mainFilePath: String, cp: String, args: Option[String] = None): Int = {
 
     //Compiling the java code
     try {
@@ -36,23 +36,29 @@ class JavaProcessExecutor extends LazyLogging {
     }
     catch {
       case exception: Exception => println(exception)
-        return
+        return -1
     }
     try {
+
+      // java -Dvar1 -Dvar2 -cp classPath class arg1 arg2 arg3
       val command = ApplicationConstants.JAVA_EXECUTE_COMMAND +
         s" -D${ApplicationConstants.PROPERTY_SERVER_IP}=${ConfigReader.messageClientIPAddress}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_PORT}=${ConfigReader.messageClientPort}" +
         s" -D${ApplicationConstants.PROPERTY_SERVER_DELIMITER}=${ConfigReader.messageClientDelimiter}" +
-        " -cp " + s"${IOUtils.resolveAbsolutePath(cp)}$cpDelimiter$systemClassPath" + " " + mainFilePath.split("/").last.replace(".java", "")
+        " -cp " + s"${IOUtils.resolveAbsolutePath(cp)}$cpDelimiter$systemClassPath" + " " +
+        mainFilePath.split("/").last.replace(".java", "") + " " + args.getOrElse("")
 
       logger.info(s"Running java program: $command")
 
       val executedResult = command !
 
-      println(executedResult)
+      executedResult
     }
     catch {
-      case exception: Exception => println(exception)
+      case exception: Exception => {
+        println(exception)
+        -1
+      }
     }
 
 
@@ -65,7 +71,7 @@ class JavaProcessExecutor extends LazyLogging {
     * @param cp       the class path for the project to be compiled
     * @param mainFile The filename having main method
     */
-  private def compileJavaCode(cp: String, mainFile: String): Unit = {
+  def compileJavaCode(cp: String, mainFile: String): Int = {
 
     val command = ApplicationConstants.JAVA_COMPILE_COMMAND + s"${IOUtils.resolveAbsolutePath(cp)}$cpDelimiter$systemClassPath ${IOUtils.resolveAbsolutePath(cp)}/$mainFile"
 

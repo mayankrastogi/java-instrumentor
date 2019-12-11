@@ -47,6 +47,7 @@ class SocketServer(val map: Map[String, ScopeTableItem]) extends Runnable {
     logger.info("Ready ? {} ", in.ready())
 
 
+    logger.info("Scope table passed: {} ", map)
     var inComingMessage = ""
 
     try {

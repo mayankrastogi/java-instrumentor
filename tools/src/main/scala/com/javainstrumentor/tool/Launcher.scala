@@ -6,6 +6,8 @@ import com.javainstrumentor.tool.execution.JavaProcessExecutor
 import com.javainstrumentor.tool.parsing.JavaProject
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTable._
 import com.typesafe.scalalogging.LazyLogging
+import scala.jdk.CollectionConverters._
+
 
 /**
   * Launcher that orchestrates ASTParsing, code Instrumentation, Scope table creation, Setting up IPC and executing instrumented code in a separate JVM
@@ -28,6 +30,8 @@ object Launcher extends App with LazyLogging {
 
     val mainClass = project.getString(ConfigReader.mainClass)
 
+    val argsList = project.getStringList(ConfigReader.args).asScala
+
     logger.info("Instrumenting project... {} ", projectInputPath)
 
 
@@ -41,29 +45,34 @@ object Launcher extends App with LazyLogging {
 
     logger.info(s"Generated Scope Table:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
 
-    val server = new SocketServer(scopeTable)
 
-    val serverThread = new Thread(server)
+    //Varied executions
+    argsList.foreach(args => {
 
-    serverThread.start()
 
-    //Wait for the IPC server to start
-    while (!server.started) {
-      logger.debug("waiting to get started....")
-    }
+      val server = new SocketServer(scopeTable)
+      val serverThread = new Thread(server)
+      serverThread.start()
 
-    logger.debug("Waiting for the instrumented JVM process...")
+      //Wait for the IPC server to start
+      while (!server.started) {
+        logger.debug("waiting to get started....")
+      }
 
-    //Compile and execute on a separate JVM
-    executor.compileAndExecute(mainClass, projectOutputPath)
-    logger.debug("Joining the thread")
-    serverThread.join()
-    logger.debug("after Joining the thread")
+      logger.debug("Waiting for the instrumented JVM process...")
 
-    logger.info("updated Scope Table")
-    logger.info("*********************************")
+      //Compile and execute on a separate JVM
+      executor.compileAndExecute(mainClass, projectOutputPath, Some(args))
+      logger.debug("Joining the thread")
+      serverThread.join()
+      logger.debug("after Joining the thread")
 
-    logger.info(s"Scope Table after execution of instrumented program:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
+      logger.info("updated Scope Table")
+      logger.info("*********************************")
+
+      logger.info(s"Scope Table after execution of instrumented program:\n${scopeTable.toPrettyString(Some(projectInputPath))}")
+
+    })
 
   })
 
