@@ -19,7 +19,9 @@ case class ScopeTableItem(id: String,
   val values: ListBuffer[Any] = ListBuffer.empty
 
   override def toString: String = {
-    s"""ScopeTableItem(name: $name,
+    s"""ScopeTableItem(
+       |                id: $id,
+       |                name: $name,
        |                dataType: $dataType,
        |                methodArguments: $methodArguments,
        |                parentClass: $parentClass,

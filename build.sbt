@@ -43,6 +43,8 @@ lazy val tools = (project in file("tools"))
       "org.eclipse.jdt" % "org.eclipse.jdt.core" % "3.19.0",
 
       scalatest
-    ) ++ logback
+    ) ++ logback,
+
+    mainClass in(Compile, run) := Some("com.javainstrumentor.tool.Launcher")
   )
   .dependsOn(clientLib)

@@ -1,5 +1,9 @@
 package com.javainstrumentor.clientlib
 
+import java.util
+
+import scala.jdk.CollectionConverters._
+
 /**
  * Client-library for sending instrumentation log messages to the execution server.
  *
@@ -35,7 +39,16 @@ object Instrumentor {
    * @param value The current value of the variable.
    */
   def log(key: String, value: Any): Unit = {
-    val message = s"$key$delimiter${value.toString}"
+
+    // Expand arrays and collections
+    val serializedValue = value match {
+      case null => null
+      case v: Array[_] => s"[${v.mkString(",")}]"
+      case v: util.Collection[_] => s"[${v.asScala.mkString(",")}]"
+      case v: Iterable[_] => s"[${v.mkString(",")}]"
+      case v: Any => v.toString
+    }
+    val message = s"$key$delimiter$serializedValue"
 
     // Make IPC call to Instrumentor Server
     client.sendMessage(message)

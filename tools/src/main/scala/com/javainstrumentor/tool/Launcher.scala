@@ -6,6 +6,7 @@ import com.javainstrumentor.tool.execution.JavaProcessExecutor
 import com.javainstrumentor.tool.parsing.JavaProject
 import com.javainstrumentor.tool.parsing.scopetable.ScopeTable._
 import com.typesafe.scalalogging.LazyLogging
+
 import scala.jdk.CollectionConverters._
 
 
@@ -17,8 +18,6 @@ object Launcher extends App with LazyLogging {
   // Extract the project paths to be parsed and instrumented
   val projects = ConfigReader.projects
   val executor = new JavaProcessExecutor
-  //  val instrumentor = new Instrumentor
-
 
   //For every project
   projects.foreach(project => {
