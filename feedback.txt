@@ -1,0 +1,7 @@
+Dear Mohammed, Mayank, Bharath:
+this is an impressive project submission! I like how you worked your way around the AST parser visitor by hiding its complexity within InstrumentationVisitor. You used implicits for conversion, nice! You decided to use sockets for IPC instead of RMI or protobuds, it is ok. There are some coding issues like your use of comparison between an expression and null, Java style, it is dangerous in Scala because you compare Unit, not LHS like in while ((inComingMessage = in.readLine()) != null).
+
+Other than that, it is a well-done project! You got the full 25% plus 1% for Mohammed. Congratulations!
+
+Thank you,
+Mark
